@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .  # בונה את הקונטיינר מה-Dockerfile
+    ports:
+      - "${PORT:-5000}:5000"  # מקשר את הפורט המקומי לפורט בקונטיינר (ברירת מחדל: 5000)
+    environment:
+      - MYSQL_HOST=db  # משתנה סביבה שמצביע על שם השירות של MySQL (db)
+      - MYSQL_USER=root  # שם המשתמש למסד הנתונים
+      - MYSQL_PASSWORD=root  # סיסמת המשתמש
+      - MYSQL_DB=images_db  # שם בסיס הנתונים
+    depends_on:
+      - db  # תלות בשירות db
+
+  db:
+    image: mysql:8  # משתמש בתמונה של MySQL גרסה 8
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # סיסמת מנהל לבסיס הנתונים
+      MYSQL_DATABASE: images_db  # שם בסיס הנתונים
+    ports:
+      - "3306:3306"  # מקשר את הפורט 3306 על המחשב המקומי לפורט 3306 בקונטיינר
