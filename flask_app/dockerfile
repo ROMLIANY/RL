@@ -1,0 +1,17 @@
+# שימוש בתמונה רזה של Python
+FROM python:3.9-slim
+
+# הגדרת ספריית העבודה בתוך הקונטיינר
+WORKDIR /app
+
+# העתקת הקבצים לפרויקט
+COPY . .
+
+# התקנת התלויות של Flask
+RUN pip install --no-cache-dir flask
+
+# פתיחת הפורט של Flask
+EXPOSE 5000
+
+# הפעלת היישום Flask
+CMD ["python", "app.py"]

@@ -1,0 +1,8 @@
+CREATE DATABASE IF NOT EXISTS gif_db;
+USE gif_db;
+
+CREATE TABLE IF NOT EXISTS gifs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(255) NOT NULL,
+    description TEXT
+);
