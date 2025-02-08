@@ -25,8 +25,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        run: pytest tests/
-
+        run: |
+          pytest tests/ --maxfail=1 --disable-warnings -q
+          
   docker:
     needs: build
     runs-on: ubuntu-latest
@@ -40,10 +41,18 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set Docker Image Tag
+        run: echo "IMAGE_TAG=romliani/flask_app:latest" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: |
-          docker build -t romliani/flask_app:latest .
+          docker build -t ${{ env.IMAGE_TAG }} .
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push romliani/flask_app:latest
+          docker push ${{ env.IMAGE_TAG }}
+
+      - name: Verify Docker image in Docker Hub
+        run: |
+          docker pull ${{ env.IMAGE_TAG }}
+          docker images | grep flask_app
