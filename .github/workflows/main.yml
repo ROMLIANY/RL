@@ -26,6 +26,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Run tests
+        run: |
+          python -m unittest discover -s tests   # להניח שיש תיקיית בדיקות
+
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
