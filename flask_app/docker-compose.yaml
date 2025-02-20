@@ -2,11 +2,9 @@ version: '3'
 services:
   flask:
     build: .
-    environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=gifs_db
+    container_name: flask_app
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     depends_on:
@@ -14,12 +12,15 @@ services:
 
   mysql:
     image: mysql:8
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
-      - MYSQL_DATABASE=gifs_db
+    container_name: mysql_db
+    restart: always
+    env_file:
+      - .env
     ports:
       - "3308:3306"
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:
