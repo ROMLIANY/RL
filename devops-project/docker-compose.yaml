@@ -1,4 +1,4 @@
-version: '3'
+
 services:
   flask:
     build: .
@@ -9,6 +9,9 @@ services:
       - "5000:5000"
     depends_on:
       - mysql
+    volumes:
+      - ./app:/app   # הוספת ווליום לכל התיקייה, כולל תיקיית templates
+      - ./app/templates:/app/templates   # הוספת ווליום לתבניות עצמן
     networks:
       - mynetwork
 
