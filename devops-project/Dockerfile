@@ -1,7 +1,7 @@
-# שימוש בתמונה רזה של Python 
+# שימוש בתמונה רזה של Python
 FROM python:3.9-slim
 
-# הגדרת ספריית העבודה בתוך הקונטיינר
+# הגדרת ספריית עבודה בתוך הקונטיינר
 WORKDIR /app
 
 # העתקת קובץ הדרישות והתקנת התלויות
@@ -11,12 +11,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # העתקת קבצי הפרויקט
 COPY . .
 
+# הגדרת משתני סביבה
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=development
+
 # פתיחת הפורט של Flask
 EXPOSE 5000
-
-# הגדרת משתני סביבה
-ENV FLASK_ENV=${FLASK_ENV}
-ENV FLASK_APP=${FLASK_APP}
 
 # הפעלת היישום Flask
 CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
