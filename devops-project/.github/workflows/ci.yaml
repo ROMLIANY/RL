@@ -20,9 +20,16 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Debug Runner Filesystem
+        run: |
+          pwd
+          ls -l
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          ls -l
+          cat requirements.txt  # הוסף את השורה הזאת כדי לוודא שהקובץ קיים ונגיש
           pip install -r requirements.txt
 
       - name: Run tests
