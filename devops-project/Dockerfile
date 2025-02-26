@@ -1,22 +1,20 @@
-# שימוש בתמונה רזה של Python
+# השתמש בתמונה בסיסית של Python
 FROM python:3.9-slim
 
-# הגדרת ספריית עבודה בתוך הקונטיינר
+# הגדר את תיקיית העבודה
 WORKDIR /app
 
-# העתקת קובץ הדרישות והתקנת התלויות
+# העתק את קובץ requirements.txt
 COPY requirements.txt .
+
+# התקן את התלויות
 RUN pip install --no-cache-dir -r requirements.txt
 
-# העתקת קבצי הפרויקט
+# העתק את כל הקבצים לתוך ה-container
 COPY . .
 
-# הגדרת משתני סביבה
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=development
+# הגדר את המשתנה הסביבתי שמצביע על קובץ היישום
+ENV FLASK_APP=flask_app.py
 
-# פתיחת הפורט של Flask
-EXPOSE 5000
-
-# הפעלת היישום Flask
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
+# הפעל את Flask על כל כתובת (0.0.0.0) עם פורט 5000
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
