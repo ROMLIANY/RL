@@ -1,4 +1,3 @@
-
 services:
   flask:
     build: .
@@ -10,8 +9,8 @@ services:
     depends_on:
       - mysql
     volumes:
-      - ./app:/app   # הוספת ווליום לכל התיקייה, כולל תיקיית templates
-      - ./app/templates:/app/templates   # הוספת ווליום לתבניות עצמן
+      - ./flask_app:/app   # תיקיית ה-Flask שלך
+      - ./flask_app/templates:/app/templates   # תיקיית ה-templates של Flask
     networks:
       - mynetwork
 
