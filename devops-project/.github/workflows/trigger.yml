@@ -1,4 +1,4 @@
-name: Trigger Workflow Test
+---name: Trigger Workflow Test
 
 on:
   push:
