@@ -52,7 +52,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: ./flask_app  # עדכון הנתיב
+          context: .  # עדכון הנתיב
           file: ./flask_app/Dockerfile  # עדכון הנתיב
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
