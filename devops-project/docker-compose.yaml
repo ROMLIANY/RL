@@ -1,6 +1,8 @@
+
 services:
   flask:
-    build: .
+    build:
+      context: .
     container_name: flask_app
     env_file:
       - .env
@@ -9,8 +11,8 @@ services:
     depends_on:
       - mysql
     volumes:
-      - ./flask_app:/app   # תיקיית ה-Flask שלך
-      - ./flask_app/templates:/app/templates   # תיקיית ה-templates של Flask
+      - ./flask_app:/app   # פרויקט Flask
+      - ./flask_app/templates:/app/templates   # תבניות Flask
     networks:
       - mynetwork
 
