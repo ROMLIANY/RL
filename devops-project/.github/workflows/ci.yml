@@ -35,7 +35,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t romliani/devops-project-flask:latest -f flask_app/Dockerfile flask_app
+        docker build -t romliani/devops-project-flask:latest -f flask_app/Dockerfile flask_app/
 
 
     - name: Push Docker image
