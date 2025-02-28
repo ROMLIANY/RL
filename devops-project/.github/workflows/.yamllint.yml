@@ -1,4 +1,4 @@
-extends: default
+﻿extends: default
 
 rules:
   line-length:
