@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r flask_app/requirements.txt
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -36,7 +36,6 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t romliani/devops-project-flask:latest -f flask_app/Dockerfile flask_app/
-
 
     - name: Push Docker image
       run: |
