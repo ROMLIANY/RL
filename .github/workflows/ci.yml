@@ -18,10 +18,10 @@ jobs:
       run: ls -la
 
     - name: List files in devops-project folder
-      run: ls -la RL/devops-project
+      run: ls -la devops-project
 
     - name: List files in flask_app folder
-      run: ls -la RL/devops-project/flask_app/
+      run: ls -la devops-project/flask_app/
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -44,7 +44,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t romliani/devops-project-flask:latest -f RL/devops-project/flask_app/Dockerfile RL/devops-project/flask_app/
+        docker build -t romliani/devops-project-flask:latest -f devops-project/flask_app/Dockerfile devops-project/flask_app/
 
     - name: Push Docker image
       run: |
