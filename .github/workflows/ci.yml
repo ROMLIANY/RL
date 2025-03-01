@@ -14,13 +14,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: List root files for debugging
+      run: ls -la
+
+    - name: List files in devops-project folder
+      run: ls -la RL/devops-project
+
+    - name: List files in flask_app folder
+      run: ls -la RL/devops-project/flask_app/
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.8'
-
-    - name: List files for debugging
-      run: ls -la RL/devops-project/flask_app/
 
     - name: Install dependencies
       run: |
