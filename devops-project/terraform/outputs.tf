@@ -1,3 +1,7 @@
-output "instance_public_ip" {
-  value = aws_instance.flask_instance.public_ip
+output "kubernetes_cluster_name" {
+  value = google_container_cluster.primary.name
+}
+
+output "kubernetes_endpoint" {
+  value = google_container_cluster.primary.endpoint
 }

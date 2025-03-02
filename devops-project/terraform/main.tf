@@ -1,16 +1,12 @@
-provider "aws" {
-  region = "us-east-1"
-}
+resource "google_container_cluster" "primary" {
+  name     = var.cluster_name
+  location = var.region
 
-resource "aws_instance" "flask_instance" {
-  ami           = "ami-0c55b159cbfafe1f0"  # AMI של Ubuntu (בדוק לפי אזור)
-  instance_type = "t2.micro"  # מתאים ל-AWS Free Tier
-  key_name      = "my-key"    # שם מפתח SSH שלך
-  tags = {
-    Name = "FlaskAppInstance"
+  initial_node_count = 2
+
+  node_config {
+    machine_type = "e2-medium"
+    disk_size_gb = 20
+    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
-}
-
-output "instance_public_ip" {
-  value = aws_instance.flask_instance.public_ip
 }
