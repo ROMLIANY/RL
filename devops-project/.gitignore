@@ -19,6 +19,7 @@ Thumbs.db
 *.tfstate
 *.tfstate.backup
 .terraform/
+devops-project/terraform/gcp-key.json
 
 # Helm & Kubernetes
 mychart/charts/
