@@ -1,12 +1,25 @@
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.region
+  name     = "devops-cluster"
+  location = "us-central1"
 
-  initial_node_count = 2
-
-  node_config {
-    machine_type = "e2-medium"
-    disk_size_gb = 20
-    oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  # Authentication configuration for the Kubernetes master
+  master_auth {
+    client_certificate_config {
+      issue_client_certificate = true
+    }
   }
+
+  # Node pool configuration
+  node_pool {
+    name       = "primary-node-pool"
+    node_count = 3
+
+    node_config {
+      machine_type = "e2-medium"
+      disk_size_gb = 20
+    }
+  }
+
+  # Enable Shielded Nodes for added security
+  enable_shielded_nodes = true
 }
