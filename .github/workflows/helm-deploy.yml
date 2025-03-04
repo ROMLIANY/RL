@@ -2,7 +2,7 @@ name: Helm Deploy
 
 on:
   workflow_run:
-    workflows: ["Build Docker Image and Push to Docker Hub", "Deploy Docker Image"]
+    workflows: ["Deploy Docker Image"]
     types:
       - completed
 
