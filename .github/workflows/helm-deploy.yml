@@ -1,0 +1,23 @@
+name: Helm Deploy
+
+on:
+  workflow_run:
+    workflows: ["Build Docker Image and Push to Docker Hub", "Deploy Docker Image"]
+    types:
+      - completed
+
+jobs:
+  helm-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Deploy with Helm
+      run: |
+        helm upgrade --install my-release ./mychart/flask-chart
