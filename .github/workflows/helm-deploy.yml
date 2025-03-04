@@ -26,6 +26,8 @@ jobs:
         curl https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz | tar xz
         ./google-cloud-sdk/install.sh --quiet
         ./google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin --quiet
+        sudo mv ./google-cloud-sdk /usr/local/
+        export PATH=$PATH:/usr/local/google-cloud-sdk/bin
 
     - name: Install Helm
       run: |
