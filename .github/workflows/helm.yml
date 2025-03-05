@@ -2,7 +2,7 @@ name: Deploy with Helm
 
 on:
   workflow_run:
-    workflows: ["Terraform Plan and Apply"]  # ירוץ לאחר סיום ה-Terraform
+    workflows: ["Terraform Plan and Apply"]
     types:
       - completed
 
@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2. Set up Helm
     - name: Set up Helm
       uses: azure/setup-helm@v1
 
-    # 3. Add Helm chart repository (אם אתה עובד עם chart public או פרטי)
+    # Add Helm chart repository
     - name: Add Helm chart repository
-      run: helm repo add my-repo https://charts.example.com
+      run: |
+        helm repo add my-repo https://charts.example.com
+        helm repo update
 
-    # 4. Install/Upgrade Helm release
+    # Install or upgrade Helm release
     - name: Install or upgrade Helm release
       run: |
         helm upgrade --install flask-app ./devops-project/mychart/flask-chart \
