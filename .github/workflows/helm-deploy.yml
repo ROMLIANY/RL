@@ -24,11 +24,7 @@ jobs:
 
     - name: Install GKE Auth Plugin
       run: |
-        curl https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz | tar xz
-        ./google-cloud-sdk/install.sh --quiet
-        ./google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin --quiet
-        echo "export PATH=$PATH:$PWD/google-cloud-sdk/bin" >> $GITHUB_ENV
-        echo "export USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
+        gcloud components install gke-gcloud-auth-plugin --quiet
 
     - name: Install Helm
       run: |
