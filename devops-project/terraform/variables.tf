@@ -17,3 +17,8 @@ variable "network_name" {
 variable "subnetwork_name" {
   default     = "default"  # אם ברצונך להשתמש ב-subnetwork ברירת מחדל
 }
+
+variable "gcp_credentials_json" {
+  description = "The Google Cloud credentials in JSON format"
+  type        = string
+}
