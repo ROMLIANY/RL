@@ -1,33 +1,44 @@
-name: Terraform Deployment
+name: Terraform Plan and Apply
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Build Docker Image and Push to Docker Hub"]  # ירוץ לאחר סיום ה-CI
+    types:
+      - completed
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # 2. Set up Google Cloud credentials
+    - name: Set up Google Cloud credentials
+      uses: google-github-actions/auth@v0
+      with:
+        credentials: ${{ secrets.GCP_CREDENTIALS }}
+
+    # 3. Set up Terraform
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: "1.4.0"
+        terraform_version: '1.5.0'
 
-    - name: Configure GCP credentials
-      uses: google-github-actions/setup-gcloud@v2
-      with:
-        credentials_json: ${{ secrets.GCP_CREDENTIALS }}  # הוסף את המפתח החיוני של GCP ב-Secrets
-
+    # 4. Initialize Terraform
     - name: Terraform Init
       run: terraform init
+      working-directory: ./devops-project/terraform
 
-    - name: Terraform Plan
+    # 5. Run Terraform Plan
+    - name: Run Terraform Plan
       run: terraform plan
+      working-directory: ./devops-project/terraform
 
-    - name: Terraform Apply
+    # 6. Apply Terraform Plan (אופציונלי, תוכל להפעיל אם אתה רוצה להחיל אוטומטית את השינויים)
+    - name: Apply Terraform Plan
       run: terraform apply -auto-approve
+      working-directory: ./devops-project/terraform
+      if: github.event_name == 'workflow_run'
