@@ -57,17 +57,24 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-    # 8. Set up kubectl for GKE
+    # 8. Update `gcloud` and install the necessary plugins
+    - name: Update gcloud and install plugins
+      run: |
+        sudo apt-get update
+        sudo apt-get install google-cloud-sdk
+        gcloud components install kubectl gke-gcloud-auth-plugin
+
+    # 9. Set up kubectl for GKE
     - name: Set up GKE kubectl
       run: |
         gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
 
-    # 9. Deploy to GKE
+    # 10. Deploy to GKE
     - name: Deploy to GKE
       run: |
         kubectl set image deployment/flask-app flask-app=romliani/devops-project-flask:latest --record
 
-    # 10. Wait for deployment to complete
+    # 11. Wait for deployment to complete
     - name: Wait for deployment to complete
       run: |
         kubectl rollout status deployment/flask-app
