@@ -24,14 +24,13 @@ jobs:
 
     # 3. Pull the Docker image
     - name: Pull Docker image
-      run: |
-        docker pull romliani/devops-project-flask:latest
+      run: docker pull romliani/devops-project-flask:latest
 
     # 4. Run Docker container for testing
     - name: Run Docker container for testing
       run: |
         docker run -d -p 5000:5000 --name flask_test romliani/devops-project-flask:latest
-        sleep 20 # Wait for the container to initialize
+        sleep 10  # מחכים שהאפליקציה תעלה
 
     # 5. Test if Flask app is running
     - name: Test if Flask app is running
@@ -47,26 +46,20 @@ jobs:
           fi
         done
 
-    # 6. View Docker container logs for debugging
+    # 6. View Docker container logs
     - name: View Docker container logs
       run: docker logs flask_test
 
     # 7. Set up Google Cloud SDK
     - name: Set up Cloud SDK
       run: |
-        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-        sudo apt-get install -y apt-transport-https ca-certificates gnupg
-        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-        sudo apt-get update && sudo apt-get install -y google-cloud-sdk
-        # Install the GKE auth plugin
-        sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
+        sudo apt-get update
+        sudo apt-get install -y google-cloud-sdk google-cloud-cli-gke-gcloud-auth-plugin
 
-    # 8. Authenticate to Google Cloud
+    # 8. Authenticate to Google Cloud (Fixed using Base64)
     - name: Authenticate to Google Cloud
       run: |
-        echo "Authenticating to Google Cloud"
-        echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp_credentials.json
-        cat /tmp/gcp_credentials.json # Optional: Debugging step to see the file content
+        echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 --decode > /tmp/gcp_credentials.json
         gcloud auth activate-service-account --key-file=/tmp/gcp_credentials.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
