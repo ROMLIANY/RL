@@ -1,6 +1,5 @@
 ---
-### ci.yml
-name: CI Pipeline
+name: Build Docker Image and Push to Docker Hub
 
 on:
   push:
@@ -8,53 +7,45 @@ on:
       - main
 
 jobs:
-  terraform:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+    - name: List root files for debugging
+      run: ls -la
 
-      - name: Cache Terraform dependencies
-        uses: actions/cache@v3
-        with:
-          path: devops-project/terraform/.terraform
-          key: ${{ runner.os }}-terraform-${{ hashFiles('devops-project/terraform/terraform.lock.hcl') }}
-          restore-keys: |
-            ${{ runner.os }}-terraform-
+    - name: List files in devops-project folder
+      run: ls -la devops-project
 
-      - name: Terraform Init
-        run: terraform init
-        working-directory: devops-project/terraform
+    - name: List files in flask_app folder
+      run: ls -la devops-project/flask_app/
 
-      - name: Terraform Plan
-        run: terraform plan -parallelism=10
-        working-directory: devops-project/terraform
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -parallelism=10
-        working-directory: devops-project/terraform
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r devops-project/flask_app/requirements.txt
 
-  docker:
-    runs-on: ubuntu-latest
-    needs: terraform
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build Docker image
+      run: |
+        docker build -t romliani/devops-project-flask:latest -f devops-project/flask_app/Dockerfile devops-project/flask_app/
 
-      - name: Build and Push Docker image
-        run: |
-          docker build --cache-from=type=gha --cache-to=type=gha,mode=max \
-          -t romliani/devops-project-flask:latest -f devops-project/flask_app/Dockerfile devops-project/flask_app/
-          docker push romliani/devops-project-flask:latest
+    - name: Push Docker image
+      run: |
+        docker push romliani/devops-project-flask:latest
