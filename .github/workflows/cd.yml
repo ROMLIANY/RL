@@ -61,14 +61,12 @@ jobs:
     - name: Update gcloud and install plugins
       run: |
         sudo apt-get update
-        sudo apt-get install google-cloud-cli
-        gcloud components install kubectl gke-gcloud-auth-plugin
-
+        sudo apt-get install -y google-cloud-cli kubectl google-cloud-cli-gke-gcloud-auth-plugin
 
     # 9. Set up kubectl for GKE
     - name: Set up GKE kubectl
       run: |
-        gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
+        gcloud container clusters get-credentials devops-cluster --zone us-east1-b --project ${{ secrets.GCP_PROJECT_ID }}
 
     # 10. Deploy to GKE
     - name: Deploy to GKE
