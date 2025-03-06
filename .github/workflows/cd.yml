@@ -66,6 +66,7 @@ jobs:
       run: |
         echo "Authenticating to Google Cloud"
         echo "${{ secrets.GCP_CREDENTIALS }}" > /tmp/gcp_credentials.json
+        cat /tmp/gcp_credentials.json # Optional: Debugging step to see the file content
         gcloud auth activate-service-account --key-file=/tmp/gcp_credentials.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
