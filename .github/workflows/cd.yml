@@ -57,12 +57,13 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-    # 8. Update `gcloud` and install the necessary plugins
+    # 8. Update gcloud and install plugins
     - name: Update gcloud and install plugins
       run: |
         sudo apt-get update
-        sudo apt-get install google-cloud-sdk
+        sudo apt-get install google-cloud-cli
         gcloud components install kubectl gke-gcloud-auth-plugin
+
 
     # 9. Set up kubectl for GKE
     - name: Set up GKE kubectl
