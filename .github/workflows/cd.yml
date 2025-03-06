@@ -2,7 +2,7 @@ name: Deploy Docker Image
 
 on:
   workflow_run:
-    workflows: ["Build Docker Image and Push to Docker Hub"]  # מציין שה-CD יפעל רק לאחר שה-CI יצליח
+    workflows: ["Build Docker Image and Push to Docker Hub"]  # מציין ש-CD ירוץ לאחר ש-CI הסתיים בהצלחה
     types:
       - completed
 
@@ -42,7 +42,7 @@ jobs:
             echo "Flask app is up and running!"
             break
           else
-            echo "Waiting for Flask app to start... (Attempt $i)"
+            echo "Waiting for Flask app to start... (Attempt $i)"      
             sleep 5
           fi
         done
@@ -50,3 +50,14 @@ jobs:
     # 6. View Docker container logs for debugging
     - name: View Docker container logs
       run: docker logs flask_test
+
+    # 7. Configure GKE authentication
+    - name: Set up GKE Authentication
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}  # הסוד שמכיל את פרטי החיבור של GCP (קובץ JSON)
+
+    # 8. Deploy to GKE
+    - name: Deploy to GKE
+      run: |
+        kubectl set image deployment/flask-app flask-app=romliani/devops-project-flask:latest --record

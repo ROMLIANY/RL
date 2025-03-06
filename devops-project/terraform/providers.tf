@@ -1,5 +1,4 @@
 provider "google" {
-  credentials = jsondecode(var.gcp_credentials_json)
-  project     = var.project_id
-  region      = var.region
+  project = "windy-gearbox-451911-s2"
+  region  = "us-east1"
 }

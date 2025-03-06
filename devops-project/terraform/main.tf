@@ -1,25 +1,27 @@
+
 resource "google_container_cluster" "primary" {
-  name     = "devops-cluster"
-  location = "us-central1"
+  name               = "devops-cluster"
+  location           = "us-east1"
+  network           = "default"
+  remove_default_node_pool = true
+  deletion_protection = false  # שינוי כדי לאפשר מחיקה בעתיד
+  initial_node_count = 1  # מינימום 1 כדי למנוע שגיאה
 
-  # Authentication configuration for the Kubernetes master
-  master_auth {
-    client_certificate_config {
-      issue_client_certificate = true
-    }
+  lifecycle {
+    ignore_changes = [node_config]
   }
-
-  # Node pool configuration
-  node_pool {
-    name       = "primary-node-pool"
-    node_count = 3
-
-    node_config {
-      machine_type = "e2-medium"
-      disk_size_gb = 20
-    }
-  }
-
-  # Enable Shielded Nodes for added security
-  enable_shielded_nodes = true
 }
+
+resource "google_container_node_pool" "primary_nodes" {
+  name       = "primary-node-pool"
+  location   = "us-east1"
+  cluster    = google_container_cluster.primary.name
+  node_count = 1  # שמירה על מינימום נדרש
+
+  node_config {
+    machine_type = "e2-medium"
+    disk_size_gb = 20
+    preemptible  = false
+  }
+}
+
