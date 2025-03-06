@@ -53,11 +53,21 @@ jobs:
 
     # 7. Configure GKE authentication
     - name: Set up GKE Authentication
-      uses: google-github-actions/auth@v0
+      uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GCP_CREDENTIALS }}  # הסוד שמכיל את פרטי החיבור של GCP (קובץ JSON)
 
-    # 8. Deploy to GKE
+    # 8. Set up kubectl for GKE
+    - name: Set up GKE kubectl
+      run: |
+        gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
+
+    # 9. Deploy to GKE
     - name: Deploy to GKE
       run: |
         kubectl set image deployment/flask-app flask-app=romliani/devops-project-flask:latest --record
+
+    # 10. Wait for the deployment to be successful
+    - name: Wait for deployment to complete
+      run: |
+        kubectl rollout status deployment/flask-app
