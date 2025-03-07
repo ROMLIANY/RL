@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "flask-chart.fullname" . }}
+  name: {{ include "flask-helm.fullname" . }}
   labels:
-    {{- include "flask-chart.labels" . | nindent 4 }}
+    {{- include "flask-helm.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "flask-chart.fullname" $ }}
+                name: {{ include "flask-helm.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}

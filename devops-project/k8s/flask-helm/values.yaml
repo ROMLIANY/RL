@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  repository: romliani/devops-project-flask
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+container:
+  port: 5000
+
+ingress:
+  enabled: false
+
+serviceAccount:
+  create: true
+  name: flask-service-account
+
+autoscaling:
+  enabled: false
