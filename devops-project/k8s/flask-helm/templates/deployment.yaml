@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-app
+  name: flask-app  # שם קבוע ל-Deployment
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: flask-app  # תוודא שהשם תואם גם כאן
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: flask-app  # תוודא שהשם תואם גם כאן
     spec:
       containers:
         - name: flask
