@@ -49,7 +49,7 @@ jobs:
     # 6️⃣ הרצת בדיקות אוטומטיות ב-Flask
     - name: Run unit tests on Flask app
       run: |
-        docker exec flask_test python -m unittest discover -s .github/workflows/tests
+        docker exec flask_test python -m unittest discover -s .github/workflows/test_flask_app.py
 
     # 7️⃣ צפייה בלוגים של ה-Flask
     - name: View Docker container logs
