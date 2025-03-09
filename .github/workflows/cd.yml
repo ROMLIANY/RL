@@ -98,8 +98,8 @@ jobs:
     # 1️⃣3️⃣ עדכון התמונה של ה-Deployment ב-Kubernetes באמצעות Terraform
     - name: Deploy to GKE using Terraform
       run: |
-        terraform -chdir=terraform init
-        terraform -chdir=terraform apply -auto-approve
+        terraform -chdir=devops-project/terraform init
+        terraform -chdir=devops-project/terraform apply -auto-approve
 
     # 1️⃣4️⃣ פריסת היישום ב-Kubernetes באמצעות Helm
     - name: Deploy to GKE using Helm
