@@ -84,6 +84,11 @@ jobs:
         gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
 
     # 1️⃣2️⃣ עדכון התמונה של ה-Deployment ב-Kubernetes
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: "latest"  # אפשר לשנות לגרסה המתאימה לך
+
     - name: Deploy to GKE using Terraform
       run: |
         terraform init
