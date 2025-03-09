@@ -30,23 +30,25 @@ jobs:
     - name: Run Docker container for testing
       run: |
         docker run -d -p 5000:5000 --name flask_test romliani/devops-project-flask:latest
-        sleep 10  # מחכים שהאפליקציה תעלה
+        sleep 15  # זמן המתנה לאפליקציה
 
-    # 5️⃣ בדיקה אם ה-Flask רץ
+    # 5️⃣ בדיקה אם Flask רץ
     - name: Test if Flask app is running
       run: |
         for i in {1..10}; do
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000)
           if [ "$HTTP_CODE" -eq 200 ]; then
             echo "Flask app is up and running!"
-            break
+            exit 0
           else
             echo "Waiting for Flask app to start... (Attempt $i)"
             sleep 5
           fi
         done
+        echo "Flask app failed to start"
+        exit 1
 
-    # 6️⃣ צפייה בלוגים של ה-Flask
+    # 6️⃣ הצגת לוגים של Flask
     - name: View Docker container logs
       run: docker logs flask_test
 
@@ -68,7 +70,7 @@ jobs:
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
         gcloud auth list  # בדיקה שהאימות הצליח
 
-    # 9️⃣ התקנת GKE Auth Plugin (מתוקן)
+    # 9️⃣ התקנת GKE Auth Plugin
     - name: Install GKE Auth Plugin
       run: |
         sudo apt-get update
@@ -76,23 +78,18 @@ jobs:
 
     # 🔟 קביעת משתנה סביבה ל-GKE
     - name: Export GKE Auth Plugin Variable
-      run: echo 'export USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $GITHUB_ENV
+      run: echo 'USE_GKE_GCLOUD_AUTH_PLUGIN=True' >> $GITHUB_ENV
 
     # 1️⃣1️⃣ התחברות ל-GKE עם kubectl
     - name: Set up GKE kubectl
       run: |
         gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
 
-    # 1️⃣2️⃣ עדכון התמונה של ה-Deployment ב-Kubernetes
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: "latest"  # אפשר לשנות לגרסה המתאימה לך
-
+    # 1️⃣2️⃣ עדכון התמונה של ה-Deployment ב-Kubernetes באמצעות Terraform
     - name: Deploy to GKE using Terraform
       run: |
-        terraform init
-        terraform apply -auto-approve
+        terraform -chdir=terraform init
+        terraform -chdir=terraform apply -auto-approve
 
     # 1️⃣3️⃣ פריסת היישום ב-Kubernetes באמצעות Helm
     - name: Deploy to GKE using Helm
@@ -102,4 +99,4 @@ jobs:
     # 1️⃣4️⃣ המתנה לסיום הפריסה
     - name: Wait for deployment to complete
       run: |
-        kubectl rollout status deployment/flask-app-app -n default
+        kubectl rollout status deployment/flask-app -n default
