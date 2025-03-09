@@ -104,7 +104,7 @@ jobs:
     # 1️⃣4️⃣ פריסת היישום ב-Kubernetes באמצעות Helm
     - name: Deploy to GKE using Helm
       run: |
-        helm upgrade --install flask-app ./flask-helm --set image.repository=romliani/devops-project-flask --set image.tag=latest
+        helm upgrade --install flask-app ./RL/flask-helm --set image.repository=romliani/devops-project-flask --set image.tag=latest
 
     # 1️⃣5️⃣ המתנה לסיום הפריסה
     - name: Wait for deployment to complete
