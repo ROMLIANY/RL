@@ -2,8 +2,7 @@ name: Docker Cleanup
 
 on:
   schedule:
-    - cron: '0 0 * * 7' # ירוץ פעם בשבוע ביום ראשון
-
+    - cron: '0 0 * * 1' # ירוץ פעם בשבוע ביום שני
 jobs:
   cleanup:
     runs-on: ubuntu-latest
