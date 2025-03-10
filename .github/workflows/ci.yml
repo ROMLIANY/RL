@@ -1,5 +1,5 @@
 ---
-name: Build Docker Image and Push to Docker Hub
+name: CI Pipeline - Build, Test, and Push Docker Image
 
 on:
   push:
@@ -32,6 +32,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r devops-project/flask_app/requirements.txt
+
+    - name: Run tests
+      run: |
+        python -m unittest discover -s devops-project/flask_app/tests
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
