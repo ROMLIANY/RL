@@ -1,0 +1,38 @@
+name: Docker Cleanup
+
+on:
+  schedule:
+    - cron: '0 0 * * 7' # ירוץ פעם בשבוע ביום ראשון
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Remove old Docker images locally
+        run: |
+          docker image prune -af  # מוחק תמונות שלא בשימוש
+
+      - name: Delete old images from DockerHub
+        run: |
+          TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
+            -d '{"username": "${{ secrets.DOCKERHUB_USERNAME }}", "password": "${{ secrets.DOCKERHUB_PASSWORD }}"}' \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
+          # מציאת תמונות ישנות
+          REPO="romliani/devops-project-flask"
+          IMAGES=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | jq -r '.results[].name')
+
+          # שמירת התמונה האחרונה והשארת 3 גרסאות אחרונות בלבד
+          KEEP_IMAGES=$(echo "$IMAGES" | head -n 3)
+
+          for IMAGE in $IMAGES; do
+            if ! echo "$KEEP_IMAGES" | grep -q "$IMAGE"; then
+              echo "Deleting old image: $IMAGE"
+              curl -X DELETE -H "Authorization: Bearer $TOKEN" \
+                "https://hub.docker.com/v2/repositories/$REPO/tags/$IMAGE/"
+            fi
+          done
