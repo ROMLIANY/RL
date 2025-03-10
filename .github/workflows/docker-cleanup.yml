@@ -40,6 +40,9 @@ jobs:
         IMAGES=$(curl -s -H "Authorization: Bearer $TOKEN" \
           "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | jq -r '.results | map(select(.name != "latest")) | .[].name')
 
+        # הדפסת רשימת התגים למעקב
+        echo "Images found: $IMAGES"
+        
         if [ -z "$IMAGES" ]; then
           echo "Error: No images found or unable to fetch images"
           exit 1
