@@ -23,18 +23,20 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           # התחברות ל-Docker Hub וקבלת הטוקן
-          TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
+          RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
             -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
-            https://hub.docker.com/v2/users/login/ | jq -r .token)
+            https://hub.docker.com/v2/users/login/)
 
-          # הדפסת הטוקן לצורך בדיקה
-          echo "Token: $TOKEN"
+          # בודק אם התקבל טוקן
+          TOKEN=$(echo "$RESPONSE" | jq -r .token)
 
-          # אם הטוקן לא קיים, להפסיק את הביצוע
           if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
             echo "Error: Unable to get DockerHub token"
             exit 1
           fi
+
+          # הדפסת הטוקן לצורך בדיקה
+          echo "Token: $TOKEN"
 
           REPO="romliani/devops-project-flask"
 
