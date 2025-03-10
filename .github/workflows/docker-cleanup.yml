@@ -1,7 +1,9 @@
 name: Docker Cleanup
 
 on:
-  workflow_dispatch:  # מאפשר להריץ את ה-Workflow ידנית
+  push:
+    branches:
+      - main
 
 jobs:
   cleanup:
@@ -11,36 +13,33 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker
-      uses: docker/setup-buildx-action@v2
-
-    - name: Install jq (required for JSON parsing)
+    - name: Install jq
       run: sudo apt-get update && sudo apt-get install -y jq
 
-    - name: Login to Docker Hub
+    - name: Docker Login
       run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Run Docker Cleanup
+    - name: Get DockerHub Token
       run: |
-        # קבלת ה-Token של DockerHub
-        TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
-          -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
-          https://hub.docker.com/v2/users/login/ | jq -r .token)
+        RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
+          -d "{\"username\": \"${{ secrets.DOCKER_USERNAME }}\", \"password\": \"${{ secrets.DOCKER_PASSWORD }}\"}" \
+          https://hub.docker.com/v2/users/login/)
+        echo "Response: $RESPONSE"
+        TOKEN=$(echo $RESPONSE | jq -r .token)
 
-        # בדוק אם ה-token הוחזר כראוי
         if [ "$TOKEN" == "null" ]; then
           echo "Error: Unable to fetch token from Docker Hub"
           exit 1
         fi
 
-        # הגדרת הרפוזיטורי
-        REPO="your_username/your_repository"  # שנה את שם הרפוזיטורי שלך
-
+    - name: List Docker images and delete old ones
+      run: |
+        REPO="romliani/devops-project-flask"  # שם הרפוזיטורי שלך ב-Docker Hub
+        
         # קבלת רשימת התגים (tags) מה-DockerHub
         IMAGES=$(curl -s -H "Authorization: Bearer $TOKEN" \
           "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | jq -r '.results | map(select(.name != "latest")) | .[].name')
 
-        # בדוק אם התגובות חזרו כראוי
         if [ -z "$IMAGES" ]; then
           echo "Error: No images found or unable to fetch images"
           exit 1
@@ -58,13 +57,11 @@ jobs:
             DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
               "https://hub.docker.com/v2/repositories/$REPO/tags/$IMAGE/" | jq -r '.digest')
 
-            # בדוק אם ה-digest קיים
             if [ "$DIGEST" == "null" ]; then
               echo "Error: Unable to fetch digest for image $IMAGE"
               exit 1
             fi
 
-            # אם ה-digest קיים, נמחק את התמונה
             echo "Deleting old image: $IMAGE (digest: $DIGEST)"
             curl -X DELETE -H "Authorization: Bearer $TOKEN" \
               "https://hub.docker.com/v2/repositories/$REPO/manifests/$DIGEST/"
