@@ -18,8 +18,8 @@ jobs:
 
       - name: Delete old images from DockerHub
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           # התחברות ל-Docker Hub וקבלת הטוקן
           TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
