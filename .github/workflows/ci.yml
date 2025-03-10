@@ -50,6 +50,10 @@ jobs:
       run: |
         docker build -t romliani/devops-project-flask:latest -f devops-project/flask_app/Dockerfile devops-project/flask_app/
 
+    - name: Clean up old Docker images
+      run: |
+        docker image prune -f --filter "until=120h"
+
     - name: Push Docker image
       run: |
         docker push romliani/devops-project-flask:latest
