@@ -1,82 +1,56 @@
 name: Docker Cleanup
 
 on:
-  schedule:
-    - cron: '0 0 * * 1'  # ירוץ פעם בשבוע ביום שני
+  workflow_dispatch:  # מאפשר להריץ את ה-Workflow ידנית
 
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Log in to DockerHub
-        run: |
-          if [ -z "${{ secrets.DOCKER_USERNAME }}" ] || [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
-            echo "Error: Missing DockerHub credentials"
-            exit 1
-          fi
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
 
-      - name: Remove old Docker images locally
-        run: docker image prune -af  # מוחק תמונות שלא בשימוש
+    - name: Install jq (required for JSON parsing)
+      run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Delete old images from DockerHub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
-            echo "Error: DockerHub credentials are missing"
-            exit 1
-          fi
+    - name: Login to Docker Hub
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-          # התחברות ל-Docker Hub וקבלת הטוקן
-          RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
-            -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
-            https://hub.docker.com/v2/users/login/)
+    - name: Run Docker Cleanup
+      run: |
+        # קבלת ה-Token של DockerHub
+        TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
+          -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
+          https://hub.docker.com/v2/users/login/ | jq -r .token)
 
-          # הצגת התשובה המתקבלת (לצורך אבחון)
-          echo "API Response: $RESPONSE"
+        # הגדרת הרפוזיטורי
+        REPO="your_username/your_repository"  # שנה את שם הרפוזיטורי שלך
 
-          # בודק אם התקבל טוקן
-          TOKEN=$(echo "$RESPONSE" | jq -r .token)
+        # קבלת רשימת התגים (tags) מה-DockerHub
+        IMAGES=$(curl -s -H "Authorization: Bearer $TOKEN" \
+          "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | jq -r '.results | map(select(.name != "latest")) | .[].name')
 
-          # בדיקה אם הטוקן ריק או לא תקין
-          if [ "$TOKEN" == "null" ] || [ -z "$TOKEN" ]; then
-            echo "Error: Unable to get DockerHub token, response: $RESPONSE"
-            exit 1
-          fi
+        # שמירת 3 הגרסאות האחרונות בלבד
+        KEEP_IMAGES=$(echo "$IMAGES" | head -n 3)
 
-          echo "Token successfully retrieved"
+        # עבור כל תמונה (tag) ברשימה
+        for IMAGE in $IMAGES; do
+          if echo "$KEEP_IMAGES" | grep -q "$IMAGE"; then
+            echo "Keeping image: $IMAGE"
+          else
+            # קבלת ה-digest של התמונה
+            DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
+              "https://hub.docker.com/v2/repositories/$REPO/tags/$IMAGE/" | jq -r '.digest')
 
-          REPO="romliani/devops-project-flask"
-
-          # קבלת רשימת התגים בתמונות
-          IMAGES=$(curl -s -H "Authorization: Bearer $TOKEN" \
-            "https://hub.docker.com/v2/repositories/$REPO/tags/?page_size=100" | jq -r '.results | map(select(.name != "latest")) | .[].name')
-
-          # בדיקה אם לא נמצאו תמונות
-          if [ -z "$IMAGES" ]; then
-            echo "No images found in the repository"
-            exit 1
-          fi
-
-          # שמירת 3 הגרסאות האחרונות בלבד
-          KEEP_IMAGES=$(echo "$IMAGES" | head -n 3)
-
-          for IMAGE in $IMAGES; do
-            if echo "$KEEP_IMAGES" | grep -q "$IMAGE"; then
-              echo "Keeping image: $IMAGE"
-            else
-              DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
-                "https://hub.docker.com/v2/repositories/$REPO/tags/$IMAGE/" | jq -r '.digest')
-
-              if [ "$DIGEST" != "null" ]; then
-                echo "Deleting old image: $IMAGE (digest: $DIGEST)"
-                curl -X DELETE -H "Authorization: Bearer $TOKEN" \
-                  "https://hub.docker.com/v2/repositories/$REPO/manifests/$DIGEST/"
-              fi
+            # אם ה-digest קיים, נמחק את התמונה
+            if [ "$DIGEST" != "null" ]; then
+              echo "Deleting old image: $IMAGE (digest: $DIGEST)"
+              curl -X DELETE -H "Authorization: Bearer $TOKEN" \
+                "https://hub.docker.com/v2/repositories/$REPO/manifests/$DIGEST/"
             fi
-          done
+          fi
+        done
