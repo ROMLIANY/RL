@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random GIF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Random GIF</h1>
     <img src="{{ gif_url }}" width="500">
+    <button onclick="window.location.reload();">הצג GIF נוסף</button>
 </body>
 </html>

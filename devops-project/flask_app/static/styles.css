@@ -1,0 +1,65 @@
+/* הגדרת רקע גרדיאנט צבעוני */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #00c6ff, #0072ff); /* גרדיאנט כחול */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* שיפור הכותרת */
+h1 {
+    color: white;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    animation: fadeInText 2s ease-out forwards;
+}
+
+/* הנפשה לכותרת */
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* שיפור עיצוב התמונה */
+img {
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+}
+
+/* הגדלת התמונה כשעוברים עליה עם העכבר */
+img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* סטייל לכפתור */
+button {
+    background-color: #ff7f50;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.3s ease;
+}
+
+/* שינוי צבע הכפתור כשעוברים עליו עם העכבר */
+button:hover {
+    background-color: #ff5722;
+}
