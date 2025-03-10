@@ -2,7 +2,7 @@ name: Docker Cleanup
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # ירוץ פעם בשבוע ביום שני
+    - cron: '0 0 * * 1'  # ירוץ פעם בשבוע ביום שני
 
 jobs:
   cleanup:
@@ -12,7 +12,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ] || [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
+            echo "Error: Missing DockerHub credentials"
+            exit 1
+          fi
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Remove old Docker images locally
         run: docker image prune -af  # מוחק תמונות שלא בשימוש
@@ -22,6 +27,11 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
+          if [ -z "$DOCKER_USERNAME" ] || [ -z "$DOCKER_PASSWORD" ]; then
+            echo "Error: DockerHub credentials are missing"
+            exit 1
+          fi
+
           # התחברות ל-Docker Hub וקבלת הטוקן
           RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
             -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
