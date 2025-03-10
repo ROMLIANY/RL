@@ -1,5 +1,5 @@
 ---
-name: CI Pipeline - Build, Test, and Push Docker Image
+name: Build Docker Image and Push to Docker Hub
 
 on:
   push:
