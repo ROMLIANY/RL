@@ -3,6 +3,7 @@ name: Docker Cleanup
 on:
   schedule:
     - cron: '0 0 * * 1' # ירוץ פעם בשבוע ביום שני
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -11,19 +12,19 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Remove old Docker images locally
         run: docker image prune -af  # מוחק תמונות שלא בשימוש
 
       - name: Delete old images from DockerHub
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           # התחברות ל-Docker Hub וקבלת הטוקן
           TOKEN=$(curl -s -X POST -H "Content-Type: application/json" \
-            -d "{\"username\": \"$DOCKERHUB_USERNAME\", \"password\": \"$DOCKERHUB_PASSWORD\"}" \
+            -d "{\"username\": \"$DOCKER_USERNAME\", \"password\": \"$DOCKER_PASSWORD\"}" \
             https://hub.docker.com/v2/users/login/ | jq -r .token)
 
           # הדפסת הטוקן לצורך בדיקה
