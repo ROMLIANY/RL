@@ -3,6 +3,8 @@ name: Docker Cleanup
 on:
   schedule:
     - cron: '0 0 * * 1' # ירוץ פעם בשבוע ביום שני
+  workflow_dispatch:  # הוספת האפשרות להריץ ידנית
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
