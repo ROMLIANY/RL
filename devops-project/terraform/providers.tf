@@ -1,5 +1,5 @@
 provider "google" {
-  credentials = file("/tmp/gcp_credentials.json")
+  credentials = file("gcp-key.json")
   project     = "windy-gearbox-451911-s2"
   region      = "us-east1"
 }
