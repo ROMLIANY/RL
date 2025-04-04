@@ -65,10 +65,10 @@ jobs:
     # 8️⃣ אימות מול Google Cloud
     - name: Authenticate to Google Cloud
       run: |
-        echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 --decode > /tmp/gcp_credentials.json
-        gcloud auth activate-service-account --key-file=/tmp/gcp_credentials.json
+        echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 --decode > devops-project/terraform/gcp-key.json
+        gcloud auth activate-service-account --key-file=devops-project/terraform/gcp-key.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-        gcloud auth list  # בדיקה שהאימות הצליח
+        gcloud auth list
 
     # 9️⃣ התקנת GKE Auth Plugin
     - name: Install GKE Auth Plugin
