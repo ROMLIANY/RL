@@ -1,7 +1,9 @@
-/* הגדרת רקע גרדיאנט צבעוני */
+/* רקע גרדיאנט עם תנועה */
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #00c6ff, #0072ff); /* גרדיאנט כחול */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(270deg, #00c6ff, #0072ff, #00c6ff);
+    background-size: 600% 600%;
+    animation: gradientShift 10s ease infinite;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,13 +13,22 @@ body {
     text-align: center;
 }
 
-/* שיפור הכותרת */
+/* אנימציה לגרדיאנט */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* כותרת משודרגת */
 h1 {
     color: white;
-    font-size: 48px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
     animation: fadeInText 2s ease-out forwards;
+    margin-bottom: 20px;
 }
 
 /* הנפשה לכותרת */
@@ -32,34 +43,57 @@ h1 {
     }
 }
 
-/* שיפור עיצוב התמונה */
+/* עיצוב לתמונה עם כניסה חלקה */
 img {
-    border-radius: 10px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin-top: 20px;
+    opacity: 0;
+    animation: fadeInImage 2s ease 0.5s forwards;
 }
 
-/* הגדלת התמונה כשעוברים עליה עם העכבר */
+/* הנפשה לתמונה */
+@keyframes fadeInImage {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* הגדלת התמונה בעת ריחוף */
 img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transform: scale(1.07);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
-/* סטייל לכפתור */
+/* כפתור משודרג */
 button {
     background-color: #ff7f50;
     color: white;
-    padding: 12px 30px;
+    padding: 14px 34px;
     border: none;
-    border-radius: 5px;
-    font-size: 18px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
-    margin-top: 30px;
-    transition: background-color 0.3s ease;
+    margin-top: 40px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 127, 80, 0.4);
+    opacity: 0;
+    animation: fadeInButton 2s ease 1s forwards;
 }
 
-/* שינוי צבע הכפתור כשעוברים עליו עם העכבר */
+/* הנפשה לכפתור */
+@keyframes fadeInButton {
+    to {
+        opacity: 1;
+    }
+}
+
+/* אפקט ריחוף */
 button:hover {
     background-color: #ff5722;
+    box-shadow: 0 6px 20px rgba(255, 87, 34, 0.6);
+    transform: translateY(-3px);
 }
