@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Random GIF</h1>
-    <img src="{{ gif_url }}" width="500">
-    <button onclick="window.location.reload();"></button>הצג gif אחר!</button>
+    <h1>Random GIF 🤩</h1>
+    <img src="{{ gif_url }}" alt="Random GIF" width="500">
+    
+    <button onclick="window.location.reload();">
+        הצג GIF אחר!
+    </button>
 </body>
 </html>
