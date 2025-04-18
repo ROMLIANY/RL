@@ -3,7 +3,12 @@ variable "project_id" {
 }
 
 variable "region" {
-  default = "us-east1"  # זה האזור שבו הפרויקט שלך נמצא
+  default = "us-east1"
+}
+
+variable "zone" {
+  default     = "us-east1-b"
+  description = "Zone for GKE cluster and node pool"
 }
 
 variable "cluster_name" {
