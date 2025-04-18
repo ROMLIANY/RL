@@ -2,11 +2,11 @@ replicaCount: 1
 
 image:
   repository: romliani/devops-project-flask
-  tag: v1
+  tag: v1.2.3
   pullPolicy: IfNotPresent
 
 service:
-  type: LoadBalancer
+  type: ClusterIP #LoadBalancer
   port: 80
 
 container:
