@@ -83,7 +83,7 @@ jobs:
     # 1️⃣1️⃣ התחברות ל-GKE עם kubectl
     - name: Set up GKE kubectl
       run: |
-        gcloud container clusters get-credentials devops-cluster --zone us-east1 --project ${{ secrets.GCP_PROJECT_ID }}
+        gcloud container clusters get-credentials devops-cluster --zone us-east1-b --project ${{ secrets.GCP_PROJECT_ID }}
 
     # 1️⃣2️⃣ התקנת Terraform
     - name: Install Terraform
@@ -115,3 +115,10 @@ jobs:
     - name: Restart deployment if necessary
       run: |
         kubectl rollout restart deployment/flask-app-app -n default
+
+    # 1️⃣7️⃣ בדיקת היישום אחרי הפריסה
+    - name: Test Flask app accessibility
+      run: |
+        SERVICE_IP=$(kubectl get svc flask-app-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        echo "Testing Flask app at http://$SERVICE_IP"
+        curl -f http://$SERVICE_IP || exit 1
