@@ -53,3 +53,7 @@ jobs:
     - name: Push Docker image
       run: |
         docker push romliani/devops-project-flask:latest
+
+    - name: Upgrade Helm release
+      run: |
+        helm upgrade flask-app ./chart --install --atomic --namespace default
